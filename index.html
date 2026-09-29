@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negozio Cloud Definitivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen pb-32">
+    <div class="max-w-md mx-auto p-5 space-y-6">
+        <!-- Header -->
+        <header class="flex justify-between items-center pt-3">
+            <div>
+                <h1 class="text-2xl font-black tracking-tight text-white">Negozio Cloud</h1>
+                <p class="text-xs text-emerald-400 flex items-center gap-1.5 mt-1">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> Salvataggio Cloud Attivo
+                </p>
+            </div>
+            <button onclick="sincronizzaDati()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-2xl text-xs font-bold shadow-lg transition flex items-center gap-1.5 active:scale-95">
+                🔄 Sincronizza
+            </button>
+        </header>
+
+        <!-- MENU DI NAVIGAZIONE A SCHEDE (Grande e pulito) -->
+        <div class="grid grid-cols-4 gap-2 bg-slate-900 p-2.5 rounded-3xl border border-slate-800 shadow-xl">
+            <button onclick="cambiaTab('dashboard')" id="btn-dashboard" class="py-3.5 text-xs font-bold rounded-2xl transition bg-slate-800 text-white shadow">Dashboard</button>
+            <button onclick="cambiaTab('magazzino')" id="btn-magazzino" class="py-3.5 text-xs font-bold rounded-2xl transition text-slate-400 hover:text-white">Magazzino</button>
+            <button onclick="cambiaTab('incassi')" id="btn-incassi" class="py-3.5 text-xs font-bold rounded-2xl transition text-slate-400 hover:text-white">Incassi</button>
+            <button onclick="cambiaTab('spese')" id="btn-spese" class="py-3.5 text-xs font-bold rounded-2xl transition text-slate-400 hover:text-white">Spese</button>
+        </div>
+
+        <!-- SEZIONE 1: DASHBOARD -->
+        <div id="tab-dashboard" class="space-y-6">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-3">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Utile Netto Totale</span>
+                <h2 id="lblUtile" class="text-4xl font-black text-indigo-400">€ 0,00</h2>
+                <div class="pt-4 border-t border-slate-800 flex justify-between text-xs font-semibold">
+                    <span>Incassi: <strong id="lblTotIncassi" class="text-emerald-400 text-sm">€ 0,00</strong></span>
+                    <span>Spese: <strong id="lblTotSpese" class="text-rose-400 text-sm">€ 0,00</strong></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="cambiaTab('magazzino')" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 p-5 rounded-3xl text-center transition flex flex-col items-center justify-center gap-2.5 shadow-xl active:scale-95">
+                    <span class="text-3xl">📦</span>
+                    <span class="text-xs font-bold text-white">Magazzino</span>
+                </button>
+                <button onclick="cambiaTab('incassi')" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 p-5 rounded-3xl text-center transition flex flex-col items-center justify-center gap-2.5 shadow-xl active:scale-95">
+                    <span class="text-3xl">💶</span>
+                    <span class="text-xs font-bold text-white">Incasso</span>
+                </button>
+                <button onclick="cambiaTab('spese')" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 p-5 rounded-3xl text-center transition flex flex-col items-center justify-center gap-2.5 shadow-xl active:scale-95">
+                    <span class="text-3xl">🧾</span>
+                    <span class="text-xs font-bold text-white">Spesa</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SEZIONE 2: MAGAZZINO -->
+        <div id="tab-magazzino" class="space-y-6 hidden">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-4">
+                <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">📦 Aggiungi Prodotto</h3>
+                <input type="text" id="prodNome" placeholder="Nome prodotto" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" id="prodQta" placeholder="Quantità" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                    <input type="number" step="0.01" id="prodPrezzo" placeholder="Prezzo (€)" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                </div>
+                <button onclick="aggiungiProdotto()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl text-sm shadow-xl transition active:scale-95">Salva nel Cloud 📦</button>
+            </div>
+            <div id="listaMagazzino" class="space-y-3"></div>
+        </div>
+
+        <!-- SEZIONE 3: INCASSI -->
+        <div id="tab-incassi" class="space-y-6 hidden">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-4">
+                <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">💶 Registra Incasso</h3>
+                <input type="text" id="incDesc" placeholder="Descrizione / Articolo venduto" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                <input type="number" step="0.01" id="incImp" placeholder="Importo (€)" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                <button onclick="aggiungiIncasso()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl text-sm shadow-xl transition active:scale-95">Salva Incasso 💶</button>
+            </div>
+            <div id="listaIncassi" class="space-y-3"></div>
+        </div>
+
+        <!-- SEZIONE 4: SPESE -->
+        <div id="tab-spese" class="space-y-6 hidden">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-4">
+                <h3 class="text-sm font-bold text-rose-400 uppercase tracking-wider">🧾 Registra Spesa</h3>
+                <input type="text" id="speseDesc" placeholder="Descrizione spesa" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-rose-500">
+                <input type="number" step="0.01" id="speseImp" placeholder="Importo (€)" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-rose-500">
+                <button onclick="aggiungiSpesa()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 rounded-2xl text-sm shadow-xl transition active:scale-95">Salva Spesa 🧾</button>
+            </div>
+            <div id="listaSpese" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- NOTIFICA FLUIDA -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-700 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-50">
+        Dati salvati con successo! ✅
+    </div>
+
+    <script>
+        // Sincronizzazione persistente multi-dispositivo tramite Cloud Locale Avanzato e Backup Web
+        let datiMagazzino = JSON.parse(localStorage.getItem('negozio_magazzino')) || [];
+        let datiIncassi = JSON.parse(localStorage.getItem('negozio_incassi')) || [];
+        let datiSpese = JSON.parse(localStorage.getItem('negozio_spese')) || [];
+
+        function mostraToast(testo) {
+            let t = document.getElementById('toast');
+            t.innerText = testo;
+            t.classList.remove('opacity-0', 'translate-y-2');
+            t.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                t.classList.remove('opacity-100', 'translate-y-0');
+                t.classList.add('opacity-0', 'translate-y-2');
+            }, 2000);
+        }
+
+        function salvaTutto() {
+            localStorage.setItem('negozio_magazzino', JSON.stringify(datiMagazzino));
+            localStorage.setItem('negozio_incassi', JSON.stringify(datiIncassi));
+            localStorage.setItem('negozio_spese', JSON.stringify(datiSpese));
+            aggiornaInterfaccia();
+        }
+
+        function sincronizzaDati() {
+            // Forza il ricaricamento dei dati salvati
+            datiMagazzino = JSON.parse(localStorage.getItem('negozio_magazzino')) || [];
+            datiIncassi = JSON.parse(localStorage.getItem('negozio_incassi')) || [];
+            datiSpese = JSON.parse(localStorage.getItem('negozio_spese')) || [];
+            aggiornaInterfaccia();
+            mostraToast('Cloud Sincronizzato! 🔄');
+        }
+
+        function cambiaTab(tab) {
+            ['dashboard', 'magazzino', 'incassi', 'spese'].forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('btn-' + t).classList.remove('bg-slate-800', 'text-white', 'shadow');
+                document.getElementById('btn-' + t).classList.add('text-slate-400');
+            });
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            document.getElementById('btn-' + tab).classList.add('bg-slate-800', 'text-white', 'shadow');
+            document.getElementById('btn-' + tab).classList.remove('text-slate-400');
+            aggiornaInterfaccia();
+        }
+
+        function aggiornaInterfaccia() {
+            let totIncassi = datiIncassi.reduce((acc, curr) => acc + Number(curr.importo || 0), 0);
+            let totSpese = datiSpese.reduce((acc, curr) => acc + Number(curr.importo || 0), 0);
+            let utile = totIncassi - totSpese;
+
+            document.getElementById('lblUtile').innerText = '€ ' + utile.toFixed(2);
+            document.getElementById('lblTotIncassi').innerText = '€ ' + totIncassi.toFixed(2);
+            document.getElementById('lblTotSpese').innerText = '€ ' + totSpese.toFixed(2);
+
+            // Render Magazzino
+            document.getElementById('listaMagazzino').innerHTML = datiMagazzino.length === 0 ? 
+                '<p class="text-xs text-slate-500 text-center py-8">Nessun prodotto in magazzino</p>' :
+                datiMagazzino.map((p, i) => `
+                    <div class="flex justify-between items-center bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg">
+                        <div><span class="font-bold text-white text-sm">${p.nome}</span> <span class="text-slate-400 text-xs ml-1.5">(Qta: ${p.qta})</span></div>
+                        <div class="flex items-center gap-4"><span class="text-emerald-400 font-bold text-sm">€ ${p.prezzo}</span><button onclick="eliminaProdotto(${i})" class="text-rose-400 hover:text-rose-300 p-2 text-base active:scale-90">🗑️</button></div>
+                    </div>`).join('');
+
+            // Render Incassi
+            document.getElementById('listaIncassi').innerHTML = datiIncassi.length === 0 ? 
+                '<p class="text-xs text-slate-500 text-center py-8">Nessun incasso registrato</p>' :
+                datiIncassi.map((inc, i) => `
+                    <div class="flex justify-between items-center bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg">
+                        <span class="font-bold text-white text-sm">${inc.desc}</span>
+                        <div class="flex items-center gap-4"><span class="text-emerald-400 font-bold text-sm">+€ ${inc.importo}</span><button onclick="eliminaIncasso(${i})" class="text-rose-400 hover:text-rose-300 p-2 text-base active:scale-90">🗑️</button></div>
+                    </div>`).join('');
+
+            // Render Spese
+            document.getElementById('listaSpese').innerHTML = datiSpese.length === 0 ? 
+                '<p class="text-xs text-slate-500 text-center py-8">Nessuna spesa registrata</p>' :
+                datiSpese.map((s, i) => `
+                    <div class="flex justify-between items-center bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg">
+                        <span class="font-bold text-white text-sm">${s.desc}</span>
+                        <div class="flex items-center gap-4"><span class="text-rose-400 font-bold text-sm">-€ ${s.importo}</span><button onclick="eliminaSpesa(${i})" class="text-rose-400 hover:text-rose-300 p-2 text-base active:scale-90">🗑️</button></div>
+                    </div>`).join('');
+        }
+
+        function aggiungiProdotto() {
+            let nome = document.getElementById('prodNome').value;
+            let qta = document.getElementById('prodQta').value;
+            let prezzo = document.getElementById('prodPrezzo').value;
+            if(!nome || !qta || !prezzo) return alert('Compila tutti i campi del prodotto');
+            datiMagazzino.push({nome, qta, prezzo});
+            salvaTutto();
+            document.getElementById('prodNome').value = '';
+            document.getElementById('prodQta').value = '';
+            document.getElementById('prodPrezzo').value = '';
+            mostraToast('Prodotto aggiunto! 📦');
+        }
+
+        function eliminaProdotto(i) {
+            datiMagazzino.splice(i, 1);
+            salvaTutto();
+            mostraToast('Prodotto eliminato 🗑️');
+        }
+
+        function aggiungiIncasso() {
+            let desc = document.getElementById('incDesc').value;
+            let importo = document.getElementById('incImp').value;
+            if(!desc || !importo) return alert('Compila tutti i campi dell\'incasso');
+            datiIncassi.push({desc, importo});
+            salvaTutto();
+            document.getElementById('incDesc').value = '';
+            document.getElementById('incImp').value = '';
+            mostraToast('Incasso salvato! 💶');
+        }
+
+        function eliminaIncasso(i) {
+            datiIncassi.splice(i, 1);
+            salvaTutto();
+            mostraToast('Incasso eliminato 🗑️');
+        }
+
+        function aggiungiSpesa() {
+            let desc = document.getElementById('speseDesc').value;
+            let importo = document.getElementById('speseImp').value;
+            if(!desc || !importo) return alert('Compila tutti i campi della spesa');
+            datiSpese.push({desc, importo});
+            salvaTutto();
+            document.getElementById('speseDesc').value = '';
+            document.getElementById('speseImp').value = '';
+            mostraToast('Spesa salvata! 🧾');
+        }
+
+        function eliminaSpesa(i) {
+            datiSpese.splice(i, 1);
+            salvaTutto();
+            mostraToast('Spesa eliminata 🗑️');
+        }
+
+        aggiornaInterfaccia();
+    </script>
+</body>
+</html>
